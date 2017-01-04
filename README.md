@@ -23,20 +23,19 @@ dependencies:
 ### Creating Pull Requests
 
 ```crystal
-params = Gh::PullRequest::CreateParams.new
+Gh::Pull::Create
   .title("Creating Pull Requests")
   .head("john:create_pull_requests")
   .base("master")
   .body(<<-EOS
   Hi @mosop,
 
-  I added the Gh::PullRequest class for creating pull requests.
+  I added the Gh::Pull class for creating pull requests.
 
   Thanks.
   EOS
   )
-
-Gh::PullRequest.create "mosop", "gh", params
+  .create! "mosop", "gh"
 ```
 
 ## Usage

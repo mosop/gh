@@ -1,6 +1,8 @@
 module Gh
-  class PullRequest
-    def initialize(@json : JSON::Any)
+  class Pull
+    getter json : JSON::Any
+
+    def initialize(@json)
     end
 
     def listing_key
@@ -50,10 +52,10 @@ module Gh
     end
 
     def close
-      PullRequest.close owner_login, repo_name, number
+      Pull.close owner_login, repo_name, number
     end
 
-    struct ListParams < Params
+    class List < Params
       params({
         state: String,
         head: String,
@@ -63,17 +65,17 @@ module Gh
       })
     end
 
-    def self.list(owner, repo, params = ListParams.new)
-      List(Int64, PullRequest).new("/repos/#{owner}/#{repo}/pulls", params.to_h)
+    def self.list(owner : String, repo : String, params = List.new)
+      Gh::List(Int64, Pull).new("/repos/#{owner}/#{repo}/pulls", params.to_h)
     end
 
-    def self.get(owner, repo, number)
+    def self.get(owner : String, repo : String, number : Int::Primitive)
       Client.new.get("/repos/#{owner}/#{repo}/pulls/#{number}") do |res, json|
-        PullRequest.new(json)
+        Pull.new(json)
       end
     end
 
-    struct CreateParams < Params
+    class Create < Params
       params({
         title: String,
         head: String,
@@ -82,13 +84,19 @@ module Gh
         maintainer_can_modify: Bool,
         issue: String
       })
+
+      def create!(owner, repo)
+        Pull.create owner, repo, self
+      end
     end
 
-    def self.create(owner, repo, params : CreateParams)
-      Client.new.post "/repos/#{owner}/#{repo}/pulls", params.to_h
+    def self.create(owner : String, repo : String, params : Create)
+      Client.new.post("/repos/#{owner}/#{repo}/pulls", params.to_h) do |res, json|
+        Pull.new(json)
+      end
     end
 
-    struct UpdateParams < Params
+    class Update < Params
       params({
         title: String,
         body: String,
@@ -96,18 +104,22 @@ module Gh
         base: String,
         maintainer_can_modify: Bool,
       })
+
+      def update!(owner, repo, number)
+        Pull.update owner, repo, number, self
+      end
     end
 
-    def self.update(owner, repo, number, params : UpdateParams)
+    def self.update(owner : String, repo : String, number : Int::Primitive, params : Update)
       Client.new.patch "/repos/#{owner}/#{repo}/pulls/#{number}", params.to_h
     end
 
-    def self.close(owner, repo, number)
-      update owner, repo, number, UpdateParams.new.state("close")
+    def self.close(owner : String, repo : String, number : Int::Primitive)
+      Update.state("close").update! owner, repo, number
     end
 
-    def self.close_all(owner, repo)
-      PullRequest.list(owner, repo, ListParams.new.state("open")).all.each do |pr|
+    def self.close_all(owner : String, repo : String)
+      List.state("open").list!(owner, repo).all.each do |pr|
         pr[1].close
       end
     end

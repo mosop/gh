@@ -1,6 +1,8 @@
 module Gh
-  class Repository
-    def initialize(@json : JSON::Any)
+  class Repo
+    getter json : JSON::Any
+
+    def initialize(@json)
     end
 
     def name
@@ -11,7 +13,7 @@ module Gh
       @json["full_name"].as_s
     end
 
-    struct CreateParams < Params
+    class Create < Params
       params({
         name: String,
         description: String,
@@ -25,13 +27,13 @@ module Gh
         gitignore_template: String,
         license_template: String,
       })
+
+      def create!(org = nil)
+        Repo.create org, self
+      end
     end
 
-    def self.create(params : CreateParams)
-      create nil, params
-    end
-
-    def self.create(org : String?, params : CreateParams)
+    def self.create(org : String?, params : Create)
       path = if org
         "/orgs/#{org}/repos"
       else
@@ -40,7 +42,7 @@ module Gh
       Client.new.post path, params.to_h
     end
 
-    def self.delete(owner, repo)
+    def self.delete(owner : String, repo : String)
       begin
         Client.new.delete "/repos/#{owner}/#{repo}"
       rescue ex : HttpError

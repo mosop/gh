@@ -1,6 +1,8 @@
 module Gh
   class PublicKey
-    def initialize(@json : JSON::Any)
+    getter json : JSON::Any
+
+    def initialize(@json)
     end
 
     def listing_key
@@ -16,21 +18,27 @@ module Gh
     end
 
     def self.list
-      List(Int64, PublicKey).new("/user/keys")
+      Gh::List(Int64, PublicKey).new("/user/keys")
     end
 
-    struct CreateParams < Params
+    class Create < Params
       params({
         title: String,
         key: String,
       })
+
+      def create!
+        PublicKey.create self
+      end
     end
 
     def self.create(params : CreateParams)
-      Client.new.post "/user/keys", params.to_h
+      Client.new.post("/user/keys", params.to_h) do |res, json|
+        PublicKey.new(json)
+      end
     end
 
-    def self.delete(id : Int64)
+    def self.delete(id : Int::Primitive)
       Client.new.delete "/user/keys/#{id}"
     end
 

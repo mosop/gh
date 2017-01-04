@@ -5,8 +5,8 @@ module GhCodeExampleCreatingPullRequests
 
   it name do
     gh_auth1 do
-      Gh::Repository.delete "mosop1", "gh-test"
-      Gh::Repository.create Gh::Repository::CreateParams.new.name("gh-test")
+      Gh::Repo.delete "mosop1", "gh-test"
+      Gh::Repo::Create.name("gh-test").create!
       Dir.tmp do |tmpdir|
         Dir.cd(tmpdir) do
           git_init1
@@ -17,7 +17,7 @@ module GhCodeExampleCreatingPullRequests
       end
     end
     gh_auth2 do
-      Gh::Repository.delete "mosop2", "gh-test"
+      Gh::Repo.delete "mosop2", "gh-test"
       Gh::Fork.create "mosop1", "gh-test"
       Dir.tmp do |tmpdir|
         Dir.cd(tmpdir) do
@@ -31,23 +31,26 @@ module GhCodeExampleCreatingPullRequests
           `git push origin create_pull_requests#{TO_DEV_NULL}`
         end
       end
-      params = Gh::PullRequest::CreateParams.new
+      params = Gh::Pull::Create
         .title("Creating Pull Requests")
         .head("mosop2:create_pull_requests")
         .base("master")
         .body(<<-EOS
         Hi @mosop1,
 
-        I added the Gh::PullRequest class for creating pull requests.
+        I added the Gh::Pull class for creating pull requests.
 
         Thanks.
         EOS
         )
-      Gh::PullRequest.create "mosop1", "gh-test", params
-      pr = Gh::PullRequest.get("mosop1", "gh-test", 1)
+      pr = params.create!("mosop1", "gh-test")
       pr.head_owner_login.should eq "mosop2"
       pr.head_repo_name.should eq "gh-test"
       pr.body.should eq params.body
+      got = Gh::Pull.get("mosop1", "gh-test", 1)
+      got.head_owner_login.should eq pr.head_owner_login
+      got.head_repo_name.should eq pr.head_repo_name
+      got.body.should eq pr.body
     end
   end
 end

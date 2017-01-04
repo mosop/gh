@@ -1,5 +1,5 @@
 module Gh
-  abstract struct Params
+  abstract class Params
     macro params(fields)
       {% for key, i in fields.keys %}
         {%
@@ -12,6 +12,12 @@ module Gh
         def {{name}}(value : {{t}}?)
           @{{name}} = value
           self
+        end
+
+        def self.{{name}}(value : {{t}}?)
+          o = new
+          o.{{name}} = value
+          o
         end
       {% end %}
 
