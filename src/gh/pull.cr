@@ -63,6 +63,10 @@ module Gh
         sort: String,
         direction: String
       })
+
+      def list!(owner, repo)
+        Pull.list(owner, repo, self)
+      end
     end
 
     def self.list(owner : String, repo : String, params = List.new)
