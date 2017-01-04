@@ -34,5 +34,9 @@ module Gh
     def status_code
       @response.status_code
     end
+
+    def not_found?
+      status_code == 404
+    end
   end
 end

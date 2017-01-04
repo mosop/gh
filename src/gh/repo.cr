@@ -49,5 +49,23 @@ module Gh
         raise ex unless ex.status_code == 404
       end
     end
+
+    def self.get?(owner : String, repo : String, retry : Retry = nil)
+      retry ||= Retry.times(1)
+      retry.not_nil do |retry|
+        begin
+          get(owner, repo)
+        rescue ex : HttpError
+          raise ex if retry.ends? || !ex.not_found?
+          nil
+        end
+      end
+    end
+
+    def self.get(owner : String, repo : String)
+      Client.new.get("/repos/#{owner}/#{repo}") do |res, json|
+        Repo.new(json)
+      end
+    end
   end
 end

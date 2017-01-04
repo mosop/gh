@@ -73,6 +73,13 @@ module Gh
       Gh::List(Int64, Pull).new("/repos/#{owner}/#{repo}/pulls", params.to_h)
     end
 
+    def self.get?(owner : String, repo : String, number : Int::Primitive)
+      get(owner, repo, number)
+    rescue ex : HttpError
+      raise ex unless ex.not_found?
+      nil
+    end
+
     def self.get(owner : String, repo : String, number : Int::Primitive)
       Client.new.get("/repos/#{owner}/#{repo}/pulls/#{number}") do |res, json|
         Pull.new(json)

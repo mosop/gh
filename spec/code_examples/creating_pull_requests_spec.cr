@@ -19,6 +19,7 @@ module GhCodeExampleCreatingPullRequests
     gh_auth2 do
       Gh::Repo.delete "mosop2", "gh-test"
       Gh::Fork.create "mosop1", "gh-test"
+      Gh::Repo.get? "mosop1", "gh-test", Gh::Retry.times(5)
       Dir.tmp do |tmpdir|
         Dir.cd(tmpdir) do
           git_init2
