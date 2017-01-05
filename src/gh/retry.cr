@@ -1,23 +1,24 @@
 module Gh
   class Retry
     property! times : Int64?
-    property wait : Int64 = 5000_i64
-    property first_wait : Int64 = 0_i64
+    property wait : Float64 = 5_f64
+    property first_wait : Float64 = 0_f64
 
-    macro int64(name, t, nilable = false)
+    macro prop(name, t, t2, nilable = false)
       {%
         name = name.id
+        t2 = t2.id
       %}
       def self.{{name}}(value : {{t}})
         o = new
         {% if nilable %}
           if value
-            o.{{name}} = value.to_i64
+            o.{{name}} = value.to_{{t2}}
           else
             o.{{name}} = nil
           end
         {% else %}
-          o.{{name}} = value.to_i64
+          o.{{name}} = value.to_{{t2}}
         {% end %}
         o
       end
@@ -25,20 +26,20 @@ module Gh
       def {{name}}(value : {{t}})
         {% if nilable %}
           if value
-            self.{{name}} = value.to_i64
+            self.{{name}} = value.to_{{t2}}
           else
             self.{{name}} = nil
           end
         {% else %}
-          self.{{name}} = value.to_i64
+          self.{{name}} = value.to_{{t2}}
         {% end %}
         self
       end
     end
 
-    int64 :times, Int::Primitive?, true
-    int64 :wait, Int::Primitive
-    int64 :first_wait, Int::Primitive
+    prop :times, Int::Primitive?, :i64, true
+    prop :wait, Int::Primitive, :f64
+    prop :first_wait, Int::Primitive, :f64
 
     def not_nil
       Processor.new(self).not_nil do |retry|
@@ -52,9 +53,9 @@ module Gh
 
     class Processor
       getter times : Int64
-      getter first_wait : Int64
-      getter wait : Int64
-      setter next_wait : Int64
+      getter first_wait : Float64
+      getter wait : Float64
+      setter next_wait : Float64
 
       def initialize(retry : Retry)
         @times = if times = retry.times?
