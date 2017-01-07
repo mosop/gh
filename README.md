@@ -1,6 +1,6 @@
 # Gh
 
-A yet another Crystal library for the GitHub API.
+Yet another Crystal library for accessing the GitHub API.
 
 Experimental.
 
