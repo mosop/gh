@@ -12,3 +12,6 @@ development_dependencies:
   crystal_plus:
     github: mosop/crystal_plus
     version: ~> 0.1.2
+  global_config:
+    github: mosop/global_config
+    version: ~> 0.1.0

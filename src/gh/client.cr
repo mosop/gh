@@ -3,32 +3,6 @@ module Gh
     def initialize
     end
 
-    def access_token
-      if token = Client.access_token?
-        token
-      else
-        raise NoAccessToken.new
-      end
-    end
-
-    @@access_tokens = {} of UInt64 => String
-    def self.access_tokens
-      @@access_tokens
-    end
-
-    def self.current_access_token?
-      @@access_tokens[Fiber.current.object_id]?
-    end
-
-    @@access_token : String?
-    def self.access_token=(value)
-      @@access_token = value
-    end
-
-    def self.access_token?
-      current_access_token? || @@access_token || ENV["GH_ACCESS_TOKEN"]?
-    end
-
     REDIRECT_CODES = [301, 302, 307]
 
     def join_url(path)
@@ -40,7 +14,7 @@ module Gh
       @headers ||= HTTP::Headers.new.tap do |h|
         h["Accept"] = "application/vnd.github.v3+json"
         h["User-Agent"] = "mosop/gh"
-        h["Authorization"] = "token #{access_token}"
+        h["Authorization"] = "token #{Gh.access_token}"
       end
     end
 

@@ -1,10 +1,4 @@
 module Gh
-  class Exception < ::Exception
-  end
-
-  class NoAccessToken < Exception
-  end
-
   class HttpError < Exception
     getter method : String
     getter path : String

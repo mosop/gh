@@ -1,3 +1,4 @@
+require "global_config"
 require "http"
 require "json"
 require "./*"

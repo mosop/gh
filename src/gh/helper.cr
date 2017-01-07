@@ -1,17 +1,4 @@
 module Gh
-  def self.auth(access_token : String)
-    id = Fiber.current.object_id
-    prev = Client.access_tokens[id]?
-    Client.access_tokens[id] = access_token
-    begin
-      yield
-    ensure
-      if prev
-        Client.access_tokens[id] = prev
-      end
-    end
-  end
-
   TRAILING_GIT = /\.git$/
 
   def self.owner_and_repo_from_url(url)
