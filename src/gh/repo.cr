@@ -29,7 +29,7 @@ module Gh
       })
 
       def create!(org = nil)
-        Repo.create org, self
+        Repo.create(org, self)
       end
     end
 
@@ -39,12 +39,14 @@ module Gh
       else
         "/user/repos"
       end
-      Client.new.post path, params.to_h
+      Request.post(path, params.to_h) do |req, res, json|
+        Repo.new(json)
+      end
     end
 
     def self.delete(owner : String, repo : String)
       begin
-        Client.new.delete "/repos/#{owner}/#{repo}"
+        Request.delete("/repos/#{owner}/#{repo}")
       rescue ex : HttpError
         raise ex unless ex.status_code == 404
       end
@@ -63,7 +65,7 @@ module Gh
     end
 
     def self.get(owner : String, repo : String)
-      Client.new.get("/repos/#{owner}/#{repo}") do |res, json|
+      Request.get("/repos/#{owner}/#{repo}") do |req, res, json|
         Repo.new(json)
       end
     end

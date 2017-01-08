@@ -81,9 +81,9 @@ module Gh
     end
 
     def self.get(owner : String, repo : String, number : Int::Primitive)
-      Client.new.get("/repos/#{owner}/#{repo}/pulls/#{number}") do |res, json|
+      Request.get("/repos/#{owner}/#{repo}/pulls/#{number}") do |req, res, json|
         Pull.new(json)
-      end
+      end.not_nil!
     end
 
     class Create < Params
@@ -97,14 +97,14 @@ module Gh
       })
 
       def create!(owner, repo)
-        Pull.create owner, repo, self
+        Pull.create(owner, repo, self)
       end
     end
 
     def self.create(owner : String, repo : String, params : Create)
-      Client.new.post("/repos/#{owner}/#{repo}/pulls", params.to_h) do |res, json|
-        Pull.new(json)
-      end
+      Request.post("/repos/#{owner}/#{repo}/pulls", params.to_h) do |req, res, json|
+        return Pull.new(json)
+      end.not_nil!
     end
 
     class Update < Params
@@ -117,16 +117,18 @@ module Gh
       })
 
       def update!(owner, repo, number)
-        Pull.update owner, repo, number, self
+        Pull.update(owner, repo, number, self)
       end
     end
 
     def self.update(owner : String, repo : String, number : Int::Primitive, params : Update)
-      Client.new.patch "/repos/#{owner}/#{repo}/pulls/#{number}", params.to_h
+      Request.patch("/repos/#{owner}/#{repo}/pulls/#{number}", params.to_h) do |req, res, json|
+        Pull.new(json)
+      end.not_nil!
     end
 
     def self.close(owner : String, repo : String, number : Int::Primitive)
-      Update.state("close").update! owner, repo, number
+      Update.state("close").update!(owner, repo, number)
     end
 
     def self.close_all(owner : String, repo : String)

@@ -33,13 +33,13 @@ module Gh
     end
 
     def self.create(params : CreateParams)
-      Client.new.post("/user/keys", params.to_h) do |res, json|
+      Request.post("/user/keys", params.to_h) do |req, res, json|
         PublicKey.new(json)
-      end
+      end.not_nil!
     end
 
     def self.delete(id : Int::Primitive)
-      Client.new.delete "/user/keys/#{id}"
+      Request.delete("/user/keys/#{id}")
     end
 
     def self.delete_all

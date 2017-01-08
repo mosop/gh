@@ -16,7 +16,7 @@ module Gh
     end
 
     def self.create(owner : String, repo : String, params = Create.new)
-      Client.new.post("/repos/#{owner}/#{repo}/forks", params.to_h) do |res, json|
+      Request.post("/repos/#{owner}/#{repo}/forks", params.to_h) do |req, res, json|
         Fork.new(json)
       end
     end

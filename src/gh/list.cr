@@ -9,7 +9,7 @@ module Gh
 
     def each(&block : V ->)
       return if @paginator.end_of_pages?
-      @paginator.each_page do |res, json|
+      @paginator.each_page do |req, res, json|
         json.each do |data|
           item = V.new(data)
           @all[item.listing_key] = item

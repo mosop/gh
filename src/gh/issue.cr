@@ -40,9 +40,9 @@ module Gh
     end
 
     def self.get(owner : String, repo : String, number : String | Int::Primitive)
-      Client.new.get("/repos/#{owner}/#{repo}/issues/#{number}") do |res, json|
+      Request.get("/repos/#{owner}/#{repo}/issues/#{number}") do |req, res, json|
         Issue.new(json)
-      end
+      end.not_nil!
     end
   end
 end

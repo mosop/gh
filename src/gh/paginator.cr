@@ -18,11 +18,11 @@ module Gh
         {} of String => JSON::Type
       end
       q["page"] = (@last_page + 1).to_s
-      Client.new.get(@path, q: q) do |response, json|
+      Request.get(@path, q) do |req, res, json|
         if json.size > 0
           @last_page += 1
-          yield response, json
-          if link = response.headers["Link"]?
+          yield req, res, json
+          if link = res.headers["Link"]?
             @end_of_pages = true unless NEXT =~ link
           else
             @end_of_pages = true
@@ -35,8 +35,8 @@ module Gh
 
     def each_page
       until @end_of_pages
-        fetch_next do |response, json|
-          yield response, json
+        fetch_next do |req, res, json|
+          yield req, res, json
         end
       end
     end
