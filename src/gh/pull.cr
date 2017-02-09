@@ -17,15 +17,15 @@ module Gh
       @json["issue_url"].as_s
     end
 
-    def owner_login
+    def base_repo_owner_login
       @json["base"]["repo"]["owner"]["login"].as_s
     end
 
-    def repo_name
+    def base_repo_name
       @json["base"]["repo"]["name"].as_s
     end
 
-    def head_owner_login
+    def head_repo_owner_login
       @json["head"]["repo"]["owner"]["login"].as_s
     end
 
@@ -52,7 +52,7 @@ module Gh
     end
 
     def close
-      Pull.close owner_login, repo_name, number
+      Pull.close base_repo_owner_login, base_repo_name, number
     end
 
     class List < Params

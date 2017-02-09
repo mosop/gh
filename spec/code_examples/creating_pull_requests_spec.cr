@@ -45,11 +45,11 @@ module GhCodeExampleCreatingPullRequests
         EOS
         )
       pr = params.create!("mosop1", "gh-test")
-      pr.head_owner_login.should eq "mosop2"
+      pr.head_repo_owner_login.should eq "mosop2"
       pr.head_repo_name.should eq "gh-test"
       pr.body.should eq params.body
       got = Gh::Pull.get("mosop1", "gh-test", 1)
-      got.head_owner_login.should eq pr.head_owner_login
+      got.head_repo_owner_login.should eq pr.head_repo_owner_login
       got.head_repo_name.should eq pr.head_repo_name
       got.body.should eq pr.body
     end
