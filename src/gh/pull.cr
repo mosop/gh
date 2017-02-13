@@ -17,12 +17,20 @@ module Gh
       @json["issue_url"].as_s
     end
 
+    def base_ref
+      @json["base"]["ref"].as_s
+    end
+
     def base_repo_owner_login
       @json["base"]["repo"]["owner"]["login"].as_s
     end
 
     def base_repo_name
       @json["base"]["repo"]["name"].as_s
+    end
+
+    def head_ref
+      @json["head"]["ref"].as_s
     end
 
     def head_repo_owner_login
