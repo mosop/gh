@@ -13,6 +13,10 @@ module Gh
       @json["number"].as_i64
     end
 
+    def html_url
+      @json["html_url"].as_s
+    end
+
     def issue_url
       @json["issue_url"].as_s
     end
